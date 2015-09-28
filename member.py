@@ -1,7 +1,12 @@
+# coding=UTF-8
+
 import csv
 from datetime import datetime
+
 import dominate
 from dominate.tags import *
+
+from docx import Document
 
 class Member(object):
     # Column indexes
@@ -30,6 +35,7 @@ class Member(object):
         self.keywords = []
         self.linkedin = ""
 
+
     def __str__(self):
         return  "** Member {0}\n" \
                 "Registered date: {1}\n" \
@@ -55,6 +61,11 @@ class Member(object):
                 )
 
     @staticmethod
+    def __getCategories__():
+        return ["Cat1", "Cat2"]
+
+
+    @staticmethod
     def load_from_csv(csv_file_path):
         """ Load a list of members from a csv file
         :param csv_file_path: path to the csv file
@@ -72,7 +83,7 @@ class Member(object):
                     member.header = header
                     member.load(row)
                     members.append(member)
-                    print(member)
+                    #print(member)
         return members
     
     @staticmethod
@@ -116,7 +127,7 @@ class Member(object):
         self.linkedin = row[self.header[self.__LINKEDIN_HEADER__]]
 
     @staticmethod
-    def generate_html(members):
+    def generate_html(members_list):
         """ Generate the html document for a list of members
         :param members_list: list of members objects
         :return: html
@@ -132,7 +143,7 @@ class Member(object):
                 th("Email")
 
                 # Rows
-                for member in members:
+                for member in members_list:
                     # member = Member()
                     with tr():
                         td(str(member.registered_date), cls="myClass")
@@ -140,8 +151,40 @@ class Member(object):
                         td(member.surname, cls="myClass")
                         td(member.email, cls="myClass")
         html = doc.render()
-        print(doc)
+        #print(doc)
         return html
 
 
+    @staticmethod
+    def generateDoc(members_list):
+        # document.save("/Users/Jorge/Desktop/mydoc.docx")
+        path = '/Users/Jorge/Desktop/doc2.docx'
+        f = open(path)
+        document = Document(f)
+        f.close()
+
+        mainCats = ["Cat1", "Cat2"]
+        #document.add_heading(u'Guía de expertos de ECUSA', 0)
+
+        for category in mainCats:
+            document.add_heading(category, 1)
+
+            style = "Medium Shading 1 Accent 3"
+            table = document.add_table(rows=1, cols=3, style=style)
+            table.rows[0].cells[0].text = "Nombre"
+            table.columns[0].width = 40
+            table.rows[0].cells[1].text = "Apellido1"
+            table.columns[1].width = 100
+            table.rows[0].cells[2].text = "Apellido2"
+            table.columns[2].width = 150
+            for i in range(4):
+                member = members_list[0]
+                row = table.add_row()
+                row.cells[0].text = member.first_name
+                row.cells[1].text = member.surname
+                row.cells[2].text = member.company
+
+
+
+        document.save(path)
 
