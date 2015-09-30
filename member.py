@@ -135,21 +135,89 @@ class Member(object):
         doc = dominate.document(title='ECUSA experts guide')
 
         with doc:
-            with div(id="members").add(table()):
-                # Header
-                th("Date")
-                th("First name")
-                th("Surname")
-                th("Email")
+            with header():
+                s = '''<style type="text/css">
+                        .sort {
+                          padding:8px 30px;
+                          border-radius: 6px;
+                          border:none;
+                          /*display:inline-block;*/
+                          color:#fff;
+                          text-decoration: none;
+                          background-color: #28a8e0;
+                          height:30px;
+                        }
+                        .sort:hover {
+                          text-decoration: none;
+                          background-color:#1b8aba;
+                        }
+                        .sort:focus {
+                          outline:none;
+                        }
+                        .sort:after {
+                          /*display:inline-block;*/
+                          width: 0;
+                          height: 0;
+                          border-left: 5px solid transparent;
+                          border-right: 5px solid transparent;
+                          border-bottom: 5px solid transparent;
+                          content:"";
+                          position: relative;
+                          top:-10px;
+                          right:-5px;
+                        }
+                        .sort.asc:after {
+                          width: 0;
+                          height: 0;
+                          border-left: 5px solid transparent;
+                          border-right: 5px solid transparent;
+                          border-top: 5px solid #fff;
+                          content:"";
+                          position: relative;
+                          top:4px;
+                          right:-5px;
+                        }
+                        .sort.desc:after {
+                          width: 0;
+                          height: 0;
+                          border-left: 5px solid transparent;
+                          border-right: 5px solid transparent;
+                          border-bottom: 5px solid #fff;
+                          content:"";
+                          position: relative;
+                          top:-4px;
+                          right:-5px;
+                        }
+                    </style>'''
+                style(s, type="text/css")
+            with div(id="users"):
+                with div("Search for any field"):
+                    input(cls="search", placeholder="Search")
+                with table():
+                    # Header
+                    with thead():
+                        th("Date", cls="sort").set_attribute("data-sort", "registered_date")
+                        th("First name", cls="sort").set_attribute("data-sort", "first_name")
+                        th("Surname", cls="sort").set_attribute("data-sort", "surname")
+                        th("Email", cls="sort").set_attribute("data-sort", "email")
+                    with tbody(cls="list"):
+                        # Rows
+                        for member in members_list:
+                            # member = Member()
+                            with tr():
+                                td(str(member.registered_date), cls="registered_date")
+                                td(member.first_name, cls="first_name")
+                                td(member.surname, cls="surname")
+                                td(member.email, cls="email")
 
-                # Rows
-                for member in members_list:
-                    # member = Member()
-                    with tr():
-                        td(str(member.registered_date), cls="myClass")
-                        td(member.first_name, cls="myClass")
-                        td(member.surname, cls="myClass")
-                        td(member.email, cls="myClass")
+
+            script(type="text/javascript", src="http://listjs.com/no-cdn/list.js")
+            s = '''var options = {
+                  valueNames: [ 'registered_date', 'first_name', 'surname', 'email' ]
+                };
+                var userList = new List('users', options);
+                '''
+            script(s, type="text/javascript")
         html = doc.render()
         #print(doc)
         return html
