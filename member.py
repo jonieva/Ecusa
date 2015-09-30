@@ -1,4 +1,4 @@
-# coding=UTF-8
+# -*- coding: utf-8 -*-
 
 import csv
 from datetime import datetime
@@ -20,6 +20,18 @@ class Member(object):
     __MAIN_CATEGORY_HEADER__ = "What is your professional speciality?"
     __KEYWORDS_HEADER__ = "Can you provide a few specific keywords to your professional activity?"
     __LINKEDIN_HEADER__ = "LinkedIn profile"
+
+    ENGLISH = 0
+    SPANISH = 1
+    FIELDS = {
+        "first_name": ["First name", "Nombre"],
+        "surname": ["Surname", "Apellidos"],
+        "company": ["Company", "Empresa"],
+        "position": ["Position", "Cargo"],
+        "keywords": ["Specialities", "Áreas de especialidad"],
+        "email": ["Email", "Email"],
+        "linkedin": ["Web site / LinkedIn", "Página web / LinkedIn"],
+    }
 
     def __init__(self):
         self.header = {}
@@ -127,17 +139,17 @@ class Member(object):
         self.linkedin = row[self.header[self.__LINKEDIN_HEADER__]]
 
     @staticmethod
-    def generate_html(members_list):
+    def generate_html(members_list, language_code):
         """ Generate the html document for a list of members
         :param members_list: list of members objects
+        :param language_code: 0 (ENGLISH) or 1 (SPANISH)
         :return: html
         """
         doc = dominate.document(title='ECUSA experts guide')
 
         with doc:
             with header():
-                s = '''<style type="text/css">
-                        .sort {
+                s = '''.sort {
                           padding:8px 30px;
                           border-radius: 6px;
                           border:none;
@@ -188,7 +200,7 @@ class Member(object):
                           top:-4px;
                           right:-5px;
                         }
-                    </style>'''
+                        '''
                 style(s, type="text/css")
             with div(id="users"):
                 with div("Search for any field"):
@@ -196,20 +208,20 @@ class Member(object):
                 with table():
                     # Header
                     with thead():
-                        th("Date", cls="sort").set_attribute("data-sort", "registered_date")
-                        th("First name", cls="sort").set_attribute("data-sort", "first_name")
-                        th("Surname", cls="sort").set_attribute("data-sort", "surname")
-                        th("Email", cls="sort").set_attribute("data-sort", "email")
+                        for key, values in Member.FIELDS.iteritems():
+                            th(values[language_code], cls="sort").set_attribute("data-sort", key)
                     with tbody(cls="list"):
                         # Rows
                         for member in members_list:
-                            # member = Member()
                             with tr():
-                                td(str(member.registered_date), cls="registered_date")
-                                td(member.first_name, cls="first_name")
-                                td(member.surname, cls="surname")
-                                td(member.email, cls="email")
-
+                                for key in Member.FIELDS.iterkeys():
+                                    s = eval("member.{0}".format(key))
+                                    if isinstance(s, list):
+                                        text = ", ".join(s)
+                                        print("collection: ", text)
+                                    else:
+                                        text = str(s)
+                                    td(text, cls=key)
 
             script(type="text/javascript", src="http://listjs.com/no-cdn/list.js")
             s = '''var options = {

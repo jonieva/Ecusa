@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from member import Member
 from docx import Document
 
@@ -8,18 +9,29 @@ from datetime import datetime
 import dominate
 from dominate.tags import *
 
+ENGLISH = 0
+SPANISH = 1
+FIELDS = {
+    "first_name": ["First name", "Nombre"],
+    "surname": ["Surname", "Apellidos"],
+    "company": ["Company", "Empresa"],
+    "position": ["Position", "Cargo"],
+    "keywords": ["Specialities", "Áreas de especialidad"],
+    "email": ["Email", "Email"],
+    "linkedin": ["Web site / LinkedIn", "Página web / LinkedIn"],
+}
 
-def generate_html(members_list):
+def generate_html(members_list, language_code):
     """ Generate the html document for a list of members
     :param members_list: list of members objects
+    :param language_code: 0 (ENGLISH) or 1 (SPANISH)
     :return: html
     """
     doc = dominate.document(title='ECUSA experts guide')
 
     with doc:
         with header():
-            s = '''<style type="text/css">
-                    .sort {
+            s = '''.sort {
                       padding:8px 30px;
                       border-radius: 6px;
                       border:none;
@@ -70,7 +82,7 @@ def generate_html(members_list):
                       top:-4px;
                       right:-5px;
                     }
-                </style>'''
+                    '''
             style(s, type="text/css")
         with div(id="users"):
             with div("Search for any field"):
@@ -78,20 +90,20 @@ def generate_html(members_list):
             with table():
                 # Header
                 with thead():
-                    th("Date", cls="sort").set_attribute("data-sort", "registered_date")
-                    th("First name", cls="sort").set_attribute("data-sort", "first_name")
-                    th("Surname", cls="sort").set_attribute("data-sort", "surname")
-                    th("Email", cls="sort").set_attribute("data-sort", "email")
+                    for key, values in FIELDS.iteritems():
+                        th(values[language_code], cls="sort").set_attribute("data-sort", key)
                 with tbody(cls="list"):
                     # Rows
                     for member in members_list:
-                        # member = Member()
                         with tr():
-                            td(str(member.registered_date), cls="registered_date")
-                            td(member.first_name, cls="first_name")
-                            td(member.surname, cls="surname")
-                            td(member.email, cls="email")
-
+                            for key in FIELDS.iterkeys():
+                                s = eval("member.{0}".format(key))
+                                if isinstance(s, list):
+                                    text = ", ".join(s)
+                                    print("collection: ", text)
+                                else:
+                                    text = str(s)
+                                td(text, cls=key)
 
         script(type="text/javascript", src="http://listjs.com/no-cdn/list.js")
         s = '''var options = {
@@ -113,7 +125,7 @@ members_list = Member.load_from_csv(csv_file_path)
 
 
 #
-html = generate_html(members_list)
+html = generate_html(members_list, ENGLISH)
 print(html)
 # html = completeHtml(html2)
 
