@@ -28,6 +28,7 @@ def generate_html(members_list, language_code):
     :return: html
     """
     doc = dominate.document(title='ECUSA experts guide')
+    categories = ["Medicine", "Biology"]
 
     with doc:
         with header():
@@ -82,39 +83,76 @@ def generate_html(members_list, language_code):
                       top:-4px;
                       right:-5px;
                     }
+                    .hidden {
+                      display: none
+                    }
                     '''
             style(s, type="text/css")
-        with div(id="users"):
-            with div("Search for any field"):
-                input(cls="search", placeholder="Search")
-            with table():
-                # Header
-                with thead():
-                    for key, values in FIELDS.iteritems():
-                        th(values[language_code], cls="sort").set_attribute("data-sort", key)
-                with tbody(cls="list"):
-                    # Rows
-                    for member in members_list:
-                        with tr():
-                            for key in FIELDS.iterkeys():
-                                s = eval("member.{0}".format(key))
-                                if isinstance(s, list):
-                                    text = ", ".join(s)
-                                    print("collection: ", text)
-                                else:
-                                    text = str(s)
-                                td(text, cls=key)
 
-        script(type="text/javascript", src="http://listjs.com/no-cdn/list.js")
-        s = '''var options = {
-              valueNames: [ 'registered_date', 'first_name', 'surname', 'email' ]
-            };
-            var userList = new List('users', options);
-            '''
-        script(s, type="text/javascript")
+            script(type="text/javascript", src="http://listjs.com/no-cdn/list.js")
+            script(type="text/javascript", src="http://code.jquery.com/jquery-1.11.3.min.js")
+
+            s = '''
+                $(function(){
+                    var options = {
+                        valueNames: ['''
+            for key in FIELDS.iterkeys():
+                s+= "'{0}',".format(key)
+            s = s[:-1]
+            s+= "]};"
+
+            for category in categories:
+                s+= "var {0}List = new List('div{0}', options);".format(category)
+
+            s+= '''
+                $('.search').keyup(function(e){
+                    $('.searchDiv').css("display", "block")
+                '''
+            for category in categories:
+                 s += '{0}List.search($(this).val());'.format(category)
+            # Hide empty categories (first we have to show all of them in order that search works)
+            s+= '''
+                    $('div > table > tbody:not(:has(*))').parent().parent().css("display", "none")
+                    });
+                });'''
+            # Create the script without enconding
+            scr = script(type="text/javascript")
+            scr.add_raw_string(s)
+
+        with body():
+            with div(id="users"):
+                with div("Search for any field"):
+                    input(id="searchInput", cls="search", placeholder="Search")
+
+                i = 0
+                for category in categories:
+                    with div(id="div"+category, cls="searchDiv"):
+                        p(category, cls="category")
+                        with table():
+                            # Header
+                            with thead():
+                                for key, values in FIELDS.iteritems():
+                                    th(values[language_code], cls="sort").set_attribute("data-sort", key)
+                            with tbody(cls="list"):
+                                # Rows
+                                for member in members_list:
+                                    with tr():
+                                        for key in FIELDS.iterkeys():
+                                            s = eval("member.{0}".format(key))
+                                            if isinstance(s, list):
+                                                text = ", ".join(s)
+                                                print("collection: ", text)
+                                            else:
+                                                text = str(s)
+                                            text = text + str(i) + str(i)
+
+                                            td(text, cls=key)
+                        i+=1
+
     html = doc.render()
     #print(doc)
     return html
+
 
 
 
