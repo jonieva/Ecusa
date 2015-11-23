@@ -21,6 +21,131 @@ FIELDS = {
     "linkedin": ["Web site / LinkedIn", "Página web / LinkedIn"],
 }
 
+CATEGORIES_LIST = ["Medicine", "Biology"]
+
+
+
+def __getStyle__():
+    style = \
+        '''
+        .CSSTableGenerator {
+            margin:0px;padding:0px;
+            width:100%;
+            box-shadow: 10px 10px 5px #888888;
+            border:1px solid #000000;
+
+            -moz-border-radius-bottomleft:6px;
+            -webkit-border-bottom-left-radius:6px;
+            border-bottom-left-radius:6px;
+
+            -moz-border-radius-bottomright:6px;
+            -webkit-border-bottom-right-radius:6px;
+            border-bottom-right-radius:6px;
+
+            -moz-border-radius-topright:6px;
+            -webkit-border-top-right-radius:6px;
+            border-top-right-radius:6px;
+
+            -moz-border-radius-topleft:6px;
+            -webkit-border-top-left-radius:6px;
+            border-top-left-radius:6px;
+        }.CSSTableGenerator table{
+            border-collapse: collapse;
+                border-spacing: 0;
+            width:100%;
+            height:100%;
+            margin:0px;padding:0px;
+        }.CSSTableGenerator tr:last-child td:last-child {
+            -moz-border-radius-bottomright:6px;
+            -webkit-border-bottom-right-radius:6px;
+            border-bottom-right-radius:6px;
+        }
+        .CSSTableGenerator table tr:first-child td:first-child {
+            -moz-border-radius-topleft:6px;
+            -webkit-border-top-left-radius:6px;
+            border-top-left-radius:6px;
+        }
+        .CSSTableGenerator table tr:first-child td:last-child {
+            -moz-border-radius-topright:6px;
+            -webkit-border-top-right-radius:6px;
+            border-top-right-radius:6px;
+        }.CSSTableGenerator tr:last-child td:first-child{
+            -moz-border-radius-bottomleft:6px;
+            -webkit-border-bottom-left-radius:6px;
+            border-bottom-left-radius:6px;
+        }.CSSTableGenerator tr:hover td{
+            background-color:#ffffff;
+
+
+        }
+        .CSSTableGenerator td{
+            vertical-align:middle;
+                background:-o-linear-gradient(bottom, #c6d66b 5%, #ffffff 100%);	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #c6d66b), color-stop(1, #ffffff) );
+            background:-moz-linear-gradient( center top, #c6d66b 5%, #ffffff 100% );
+            filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#c6d66b", endColorstr="#ffffff");	background: -o-linear-gradient(top,#c6d66b,ffffff);
+
+            background-color:#c6d66b;
+
+            border:1px solid #000000;
+            border-width:0px 1px 1px 0px;
+            text-align:left;
+            padding:7px;
+            font-size:10px;
+            font-family:Arial;
+            font-weight:normal;
+            color:#000000;
+        }.CSSTableGenerator tr:last-child td{
+            border-width:0px 1px 0px 0px;
+        }.CSSTableGenerator tr td:last-child{
+            border-width:0px 0px 1px 0px;
+        }.CSSTableGenerator tr:last-child td:last-child{
+            border-width:0px 0px 0px 0px;
+        }
+        .CSSTableGenerator tr th {
+                background:-o-linear-gradient(bottom, #b8c958 5%, #b8c958 100%);	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #b8c958), color-stop(1, #b8c958) );
+            background:-moz-linear-gradient( center top, #b8c958 5%, #b8c958 100% );
+            filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#b8c958", endColorstr="#b8c958");	background: -o-linear-gradient(top,#b8c958,b8c958);
+            padding:7px;
+            background-color:#b8c958;
+            border:0px solid #000000;
+            text-align:center;
+            border-width:0px 0px 1px 1px;
+            font-size:14px;
+            font-family:Arial;
+            font-weight:bold;
+            color:#ffffff;
+        }
+        .CSSTableGenerator tr th:hover {
+            /*background:-o-linear-gradient(bottom, #b8c958 5%, #b8c958 100%);	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #b8c958), color-stop(1, #b8c958) );
+            background:-moz-linear-gradient( center top, #b8c958 5%, #b8c958 100% );
+            filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#b8c958", endColorstr="#b8c958");	background: -o-linear-gradient(top,#b8c958,b8c958);
+            */
+            background-color:#333333;
+        }
+        .CSSTableGenerator tr th {
+            border-width:0px 0px 1px 0px;
+        }
+        .CSSTableGenerator tr th {
+            border-width:0px 0px 1px 1px;
+        }
+        .CSSTableGenerator td:last-child {
+            border-width:0px 0px 1px 1px;
+        }
+
+        .categoryTitle {
+            color: #b8c958;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        searchDiv {
+            margin-top:30px
+        }
+
+        '''
+
+    return style
+
+
 def generate_html(members_list, language_code):
     """ Generate the html document for a list of members
     :param members_list: list of members objects
@@ -28,68 +153,14 @@ def generate_html(members_list, language_code):
     :return: html
     """
     doc = dominate.document(title='ECUSA experts guide')
-    categories = ["Medicine", "Biology"]
 
     with doc:
         with header():
-            s = '''.sort {
-                      padding:8px 30px;
-                      border-radius: 6px;
-                      border:none;
-                      /*display:inline-block;*/
-                      color:#fff;
-                      text-decoration: none;
-                      background-color: #28a8e0;
-                      height:30px;
-                    }
-                    .sort:hover {
-                      text-decoration: none;
-                      background-color:#1b8aba;
-                    }
-                    .sort:focus {
-                      outline:none;
-                    }
-                    .sort:after {
-                      /*display:inline-block;*/
-                      width: 0;
-                      height: 0;
-                      border-left: 5px solid transparent;
-                      border-right: 5px solid transparent;
-                      border-bottom: 5px solid transparent;
-                      content:"";
-                      position: relative;
-                      top:-10px;
-                      right:-5px;
-                    }
-                    .sort.asc:after {
-                      width: 0;
-                      height: 0;
-                      border-left: 5px solid transparent;
-                      border-right: 5px solid transparent;
-                      border-top: 5px solid #fff;
-                      content:"";
-                      position: relative;
-                      top:4px;
-                      right:-5px;
-                    }
-                    .sort.desc:after {
-                      width: 0;
-                      height: 0;
-                      border-left: 5px solid transparent;
-                      border-right: 5px solid transparent;
-                      border-bottom: 5px solid #fff;
-                      content:"";
-                      position: relative;
-                      top:-4px;
-                      right:-5px;
-                    }
-                    .hidden {
-                      display: none
-                    }
-                    '''
-            style(s, type="text/css")
+            # CSS style
+            style(__getStyle__(), type="text/css")
 
-            script(type="text/javascript", src="http://listjs.com/no-cdn/list.js")
+            # Javascript
+            #script(type="text/javascript", src="http://listjs.com/no-cdn/list.js")
             script(type="text/javascript", src="http://code.jquery.com/jquery-1.11.3.min.js")
 
             s = '''
@@ -101,34 +172,62 @@ def generate_html(members_list, language_code):
             s = s[:-1]
             s+= "]};"
 
-            for category in categories:
-                s+= "var {0}List = new List('div{0}', options);".format(category)
 
             s+= '''
-                $('.search').keyup(function(e){
-                    $('.searchDiv').css("display", "block")
-                '''
-            for category in categories:
-                 s += '{0}List.search($(this).val());'.format(category)
-            # Hide empty categories (first we have to show all of them in order that search works)
+                $.extend($.expr[":"], {
+                    "containsNC": function(elem, i, match, array) {
+                        return (elem.textContent || elem.innerText || "").toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
+                    }
+                });
+            '''
+
             s+= '''
-                    $('div > table > tbody:not(:has(*))').parent().parent().css("display", "none")
+                    function refresh(){
+                        var txt = $('#searchInput').val();
+
+                        if (txt.length > 2){
+                                res = $(".searchTable tbody tr:has(td:containsNC('" + txt + "'))");
+                                $(res).show();
+                                $(res).parent().parent().parent().show();
+
+                                var res = $(".searchTable tbody tr:not(:has(td:containsNC('" + txt + "')))");
+                                res.hide(300, function(){
+                                    var divs = $(".searchDiv:has(.searchTable:not(:has(tbody tr:visible)))");
+                                    divs.hide();
+                                });
+                        }
+                        else {
+                            $(".searchDiv .searchTable tbody tr").show();
+                            $(".searchDiv").show();
+                        }
+                    }
+
+                    $('#searchInput').keyup(function(e){
+                        refresh();
                     });
-                });'''
+                    $('#searchInput').change(function(){
+                        refresh();
+                    });
+                });
+                '''
+
             # Create the script without enconding
             scr = script(type="text/javascript")
             scr.add_raw_string(s)
 
         with body():
+            with div():
+                p("""La guia de expertos de ECUSA permite localizar rapidamente a profesionales que esten trabajando en
+                    un determinado area de especialidad.""")
+                p("Utiliza el campo de texto para buscar rapidamente en todos los campos de la tabla")
             with div(id="users"):
                 with div("Search for any field"):
                     input(id="searchInput", cls="search", placeholder="Search")
 
-                i = 0
-                for category in categories:
+                for category in CATEGORIES_LIST:
                     with div(id="div"+category, cls="searchDiv"):
-                        p(category, cls="category")
-                        with table():
+                        p(category, cls="categoryTitle")
+                        with table(cls="CSSTableGenerator searchTable"):
                             # Header
                             with thead():
                                 for key, values in FIELDS.iteritems():
@@ -141,19 +240,43 @@ def generate_html(members_list, language_code):
                                             s = eval("member.{0}".format(key))
                                             if isinstance(s, list):
                                                 text = ", ".join(s)
-                                                print("collection: ", text)
                                             else:
                                                 text = str(s)
-                                            text = text + str(i) + str(i)
-
                                             td(text, cls=key)
-                        i+=1
 
     html = doc.render()
     #print(doc)
     return html
 
 
+def generate_Word_document(members_list):
+    # document.save("/Users/Jorge/Desktop/mydoc.docx")
+    path = '/Users/Jorge/Desktop/doc2.docx'
+    f = open(path)
+    document = Document(f)
+    f.close()
+
+    mainCats = ["Cat1", "Cat2"]
+    #document.add_heading(u'Guía de expertos de ECUSA', 0)
+
+    for category in mainCats:
+        document.add_heading(category, 1)
+
+        style = "Medium Shading 1 Accent 3"
+        table = document.add_table(rows=1, cols=3, style=style)
+        table.rows[0].cells[0].text = "Nombre"
+        table.columns[0].width = 40
+        table.rows[0].cells[1].text = "Apellido1"
+        table.columns[1].width = 100
+        table.rows[0].cells[2].text = "Apellido2"
+        table.columns[2].width = 150
+        for i in range(4):
+            member = members_list[0]
+            row = table.add_row()
+            row.cells[0].text = member.first_name
+            row.cells[1].text = member.surname
+            row.cells[2].text = member.company
+    document.save(path)
 
 
 
@@ -161,53 +284,12 @@ def generate_html(members_list, language_code):
 csv_file_path = "/Users/Jorge/Projects/Ecusa/responses-sample.csv"
 members_list = Member.load_from_csv(csv_file_path)
 
-
-#
 html = generate_html(members_list, ENGLISH)
-print(html)
+# print(html)
 # html = completeHtml(html2)
 
-html_file_path = "/Users/Jorge/Projects/Ecusa/html-sample2.html"
+html_file_path = "/Users/Jorge/Projects/Ecusa/html-sample5.html"
 with open(html_file_path, "w") as f:
     f.write(html)
 
 
-# Member.generateDoc(members)
-#
-# path = '/Users/Jorge/Desktop/doc2.docx'
-# f = open(path)
-# document = Document(f)
-# f.close()
-#
-# mainCats = ["Cat1", "Cat2"]
-#
-# for category in mainCats:
-#     document.add_heading(category, 1)
-#
-#     style = "Medium Shading 1 Accent 3"
-#     table = document.add_table(rows=0, cols=0, style=style)
-#     table.autofit = False
-#     table.add_column(2300000)
-#     table.add_column(2200000)
-#     table.add_column(2200000)
-#     row = table.add_row()
-#     row.cells[0].text = "Nombre"
-#     #table.columns[0].width = 4839335
-#
-#     table.rows[0].cells[1].text = "Apellido1"
-#     # table.columns[1].width = 200
-#     table.rows[0].cells[2].text = "Company"
-#     # table.columns[2].width = 150
-#     for i in range(4):
-#         member = members_list[0]
-#         row = table.add_row()
-#         row.cells[0].text = member.first_name
-#         row.cells[1].text = member.surname
-#         row.cells[2].text = member.company
-#
-#
-#
-# document.save(path)
-#
-# #document.tables[0].rows[0].cells[0].width
-#
