@@ -6,7 +6,7 @@ from datetime import datetime
 import dominate
 from dominate.tags import *
 
-from docx import Document
+#from docx import Document
 
 
 # noinspection PyUnresolvedReferences

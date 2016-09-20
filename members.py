@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from member import Member
-from docx import Document
+#from docx import Document
 
 
 import csv
@@ -162,6 +162,7 @@ def generate_html(members_list, language_code):
             # Javascript
             #script(type="text/javascript", src="http://listjs.com/no-cdn/list.js")
             script(type="text/javascript", src="http://code.jquery.com/jquery-1.11.3.min.js")
+            script(type="text/javascript", src="sorttable.js")
 
             s = '''
                 $(function(){
@@ -173,13 +174,30 @@ def generate_html(members_list, language_code):
             s+= "]};"
 
 
+            # s+= '''
+            #     $.extend($.expr[":"], {
+            #         "containsNC": function(elem, i, match, array) {
+            #             return (elem.textContent || elem.innerText || "").toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
+            #         }
+            #     });
+            # '''
+
             s+= '''
                 $.extend($.expr[":"], {
                     "containsNC": function(elem, i, match, array) {
-                        return (elem.textContent || elem.innerText || "").toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
+                        var s = match[3].replace(";","|").toLowerCase();
+                        var spl = "";
+                        for (var i=0; i<spl.length; i++){
+                            if (spl[i].trim() != "")
+                                spl += spl[i].trim() + "|";
+                        }
+                        spl = spl.substring(0, spl.length -1);
+                        re = new RegExp(spl);
+                        return re.test((elem.textContent || elem.innerText || "").toLowerCase());
                     }
                 });
             '''
+
 
             s+= '''
                     function refresh(){
@@ -227,7 +245,7 @@ def generate_html(members_list, language_code):
                 for category in CATEGORIES_LIST:
                     with div(id="div"+category, cls="searchDiv"):
                         p(category, cls="categoryTitle")
-                        with table(cls="CSSTableGenerator searchTable"):
+                        with table(cls="CSSTableGenerator searchTable sortable"):
                             # Header
                             with thead():
                                 for key, values in FIELDS.iteritems():
@@ -281,14 +299,14 @@ def generate_Word_document(members_list):
 
 
 
-csv_file_path = "/Users/Jorge/Projects/Ecusa/responses-sample.csv"
+csv_file_path = "responses-sample.csv"
 members_list = Member.load_from_csv(csv_file_path)
 
 html = generate_html(members_list, ENGLISH)
 # print(html)
 # html = completeHtml(html2)
 
-html_file_path = "/Users/Jorge/Projects/Ecusa/html-sample5.html"
+html_file_path = "html-sample6.html"
 with open(html_file_path, "w") as f:
     f.write(html)
 
