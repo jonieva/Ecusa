@@ -1,4 +1,4 @@
-import os
+import argparse
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import smtplib
@@ -33,8 +33,6 @@ def members_about_to_expire_warning(warn_about_members_expired=True):
 
     # Open a worksheet from spreadsheet with one shot
     wks = gc.open("Active Full Members").sheet1
-    #wks = gc.open_by_key('1OhLymORZbrteqqM0F2tFgC4sCEqANAQEiLajegDmtWI')
-    #wks = gc.open_by_url('https://docs.google.com/spreadsheets/d/1OhLymORZbrteqqM0F2tFgC4sCEqANAQEiLajegDmtWI')
     # Fetch a cell range
     i = 2
     row = wks.row_values(i)
@@ -45,21 +43,20 @@ def members_about_to_expire_warning(warn_about_members_expired=True):
     first_reminder_timespan_days = -4
     second_reminder_timespan_days = 0
     today = datetime.datetime.today().date()
-    members_about_to_expire = ["About to"]
+    members_about_to_expire = []
     members_expired = [""]
 
-    # while date and i < row_count:
-    #     d = datetime.datetime.strptime(date, "%m/%d/%Y %H:%M:%S").date()
-    #     if (today-d).days == 365-first_reminder_timespan_days:
-    #         members_about_to_expire.append(u"Name: {};\nDate: {};\nEmail: {}\nRow number: {}\n\n".
-    #                                        format(get(row, 'P'), get(row, 'M'), get(row, 'T'), i))
-    #     elif (today-d).days >= 365-second_reminder_timespan_days:
-    #         members_expired.append(u"Name: {};\nDate: {};\nEmail: {}\nRow number: {}\n\n".
-    #                                        format(get(row, 'P'), get(row, 'M'), get(row, 'T'), i))
-    #     #message_text += u"Name: {};\nDate: {};\nEmail: {}\nRow: {}".format(get(row, 'P'), get(row, 'M'), get(row, 'T'), i)
-    #     i += 1
-    #     row = wks.row_values(i)
-    #     date = get(row, 'M')
+    while date and i < row_count:
+        d = datetime.datetime.strptime(date, "%m/%d/%Y %H:%M:%S").date()
+        if (today-d).days == 365-first_reminder_timespan_days:
+            members_about_to_expire.append(u"Name: {};\nDate: {};\nEmail: {}\nRow number: {}\n\n".
+                                           format(get(row, 'P'), get(row, 'M'), get(row, 'T'), i))
+        elif (today-d).days >= 365-second_reminder_timespan_days:
+            members_expired.append(u"Name: {};\nDate: {};\nEmail: {}\nRow number: {}\n\n".
+                                           format(get(row, 'P'), get(row, 'M'), get(row, 'T'), i))
+        i += 1
+        row = wks.row_values(i)
+        date = get(row, 'M')
 
     if not members_about_to_expire and not members_expired:
         return
@@ -100,86 +97,13 @@ def send_email(toaddrs, subject, body):
     server.quit()
 
 
-
 if __name__ == "__main__":
-    members_about_to_expire_warning()
+    parser = argparse.ArgumentParser(description='ECUSA notifications')
+    parser.add_argument('--warn_expired_users', type=bool,
+                        help="When False, there won't be a notification if we have only expired users", default=True)
 
-# def create_message():
-#     message_text= "hola"
-#     message = MIMEText(message_text)
-#     message['to'] = "jorgeonieva@gmail.com"
-#     message['from'] = "secretary-bos@ecusa.es"
-#     message['subject'] = "Users about to expire"
-#     m = {'raw': base64.urlsafe_b64encode(message.as_string())}
-#     return m
+    args = parser.parse_args()
+    members_about_to_expire_warning(args.warn_expired_users)
 
-# cell_list = wks.range('M2:T400')
-# len(cell_list)
-# for c in (c.value for c in cell_list if c.value.strip() != ''):
-#     print c
-#
-# c = cell_list[0]
-
-# http = credentials.authorize(httplib2.Http())
-# service = discovery.build('gmail', 'v1', http=http)
-# email = (service.users().messages().send(userId="jorgeonieva@gmail.com", body=m).execute())
-#
-#
-# 1085409003224-ppb5797vn71eih59uo1bl6v9i2ihihbr.apps.googleusercontent.com
-# DPZkqS_1q_MKXxfrDaCMrhMu
-#
-# # SCOPES = 'https://www.googleapis.com/auth/gmail.readonly'
-# CLIENT_SECRET_FILE = '/Data/jonieva/Dropbox/Ecusa/Ecusa-credentials-secretary-OAuth.json'
-# APPLICATION_NAME = 'ECUSA'
-# # Check https://developers.google.com/gmail/api/auth/scopes for all available scopes
-# SCOPE = 'https://www.googleapis.com/auth/gmail.compose'
-
-
-
-# # Try to retrieve credentials from storage or run the flow to generate them
-# credentials = STORAGE.get()
-# if credentials is None or credentials.invalid:
-#   credentials = tools.run_flow(flow, STORAGE)
-#
-# # Authorize the httplib2.Http object with our credentials
-# http = credentials.authorize(http)
-#
-# # Build the Gmail service from discovery
-# gmail_service = build('gmail', 'v1', http=http)
-
-
-
-# def get_credentials():
-#     """Gets valid user credentials from storage.
-#
-#     If nothing has been stored, or if the stored credentials are invalid,
-#     the OAuth2 flow is completed to obtain the new credentials.
-#
-#     Returns:
-#         Credentials, the obtained credential.
-#     """
-#     try:
-#         import argparse
-#         flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
-#     except ImportError:
-#         flags = None
-#
-#     home_dir = os.path.expanduser('~')
-#     credential_dir = os.path.join(home_dir, 'tmp', '.credentials')
-#     if not os.path.exists(credential_dir):
-#         os.makedirs(credential_dir)
-#     credential_path = os.path.join(credential_dir, 'ecusa-mail.json')
-#
-#     store = oauth2client.file.Storage(credential_path)
-#     credentials = store.get()
-#     if not credentials or credentials.invalid:
-#         flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPE)
-#         flow.user_agent = APPLICATION_NAME
-#         if flags:
-#             credentials = tools.run_flow(flow, store, flags)
-#         else: # Needed only for compatibility with Python 2.6
-#             credentials = tools.run(flow, store)
-#         print('Storing credentials to ' + credential_path)
-#     return credentials
 
 
