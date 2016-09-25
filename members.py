@@ -299,14 +299,22 @@ def generate_Word_document(members_list):
 
 
 
+<<<<<<< HEAD
 csv_file_path = "html-samples/responses-sample.csv"
+=======
+csv_file_path = "responses-sample.csv"
+>>>>>>> origin/master
 members_list = Member.load_from_csv(csv_file_path)
 
 html = generate_html(members_list, ENGLISH)
 # print(html)
 # html = completeHtml(html2)
 
+<<<<<<< HEAD
 html_file_path = "html-samples/html-sample6.html"
+=======
+html_file_path = "html-sample6.html"
+>>>>>>> origin/master
 with open(html_file_path, "w") as f:
     f.write(html)
 
