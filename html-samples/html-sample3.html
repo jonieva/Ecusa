@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ECUSA experts guide</title>
+    <style type="text/css">
+        .sort {
+          padding:8px 30px;
+          border-radius: 6px;
+          border:none;
+          /*display:inline-block;*/
+          color:#fff;
+          text-decoration: none;
+          background-color: #28a8e0;
+          height:30px;
+        }
+        .sort:hover {
+          text-decoration: none;
+          background-color:#1b8aba;
+        }
+        .sort:focus {
+          outline:none;
+        }
+        .sort:after {
+          /*display:inline-block;*/
+          width: 0;
+          height: 0;
+          border-left: 5px solid transparent;
+          border-right: 5px solid transparent;
+          border-bottom: 5px solid transparent;
+          content:"";
+          position: relative;
+          top:-10px;
+          right:-5px;
+        }
+        .sort.asc:after {
+          width: 0;
+          height: 0;
+          border-left: 5px solid transparent;
+          border-right: 5px solid transparent;
+          border-top: 5px solid #fff;
+          content:"";
+          position: relative;
+          top:4px;
+          right:-5px;
+        }
+        .sort.desc:after {
+          width: 0;
+          height: 0;
+          border-left: 5px solid transparent;
+          border-right: 5px solid transparent;
+          border-bottom: 5px solid #fff;
+          content:"";
+          position: relative;
+          top:-4px;
+          right:-5px;
+        }
+    </style>
+</head>
+<body>
+<div id="users">
+    <input class="search" placeholder="Search"/>
+    <button class="sort" data-sort="registered_date">Sort by name</button>
+    <table>
+        <thead>
+        <th class="sort" data-sort="registered_date">Date</th>
+        <th class="sort" data-sort="first_name">First name</th>
+        <th class="sort" data-sort="surname">Surname</th>
+        <th class="sort" data-sort="email">Email</th>
+        </thead>
+        <tbody class="list">
+        <tr>
+            <td class="registered_date">2015-09-07 11:17:05</td>
+            <td class="first_name">Jorge</td>
+            <td class="surname">Onieva Onieva</td>
+            <td class="email">e1@gmail.com</td>
+        </tr>
+        <tr>
+            <td class="registered_date">2015-09-07 11:18:03</td>
+            <td class="first_name">Jorge</td>
+            <td class="surname">Onieva 2</td>
+            <td class="email">e1@gmail.com</td>
+        </tr>
+        </tbody>
+    </table>
+
+
+</div>
+<script src="http://listjs.com/no-cdn/list.js"></script>
+<script type="text/javascript">
+    var options = {
+        valueNames: ['registered_date', 'first_name', 'surname', 'email']
+    };
+    var userList = new List('users', options);
+</script>
+</body>
+</html>

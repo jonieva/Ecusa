@@ -3,3 +3,6 @@
 !/.gitignore
 
 *.pyc
+Ecusa-credentials-secretary.json
+
+mail_pwd.txt

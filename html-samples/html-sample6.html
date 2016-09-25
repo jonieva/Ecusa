@@ -1,33 +1,11 @@
-# -*- coding: utf-8 -*-
-from member import Member
-#from docx import Document
-
-
-import csv
-from datetime import datetime
-
-import dominate
-from dominate.tags import *
-
-ENGLISH = 0
-SPANISH = 1
-FIELDS = {
-    "first_name": ["First name", "Nombre"],
-    "surname": ["Surname", "Apellidos"],
-    "company": ["Company", "Empresa"],
-    "position": ["Position", "Cargo"],
-    "keywords": ["Specialities", "Áreas de especialidad"],
-    "email": ["Email", "Email"],
-    "linkedin": ["Web site / LinkedIn", "Página web / LinkedIn"],
-}
-
-CATEGORIES_LIST = ["Medicine", "Biology"]
-
-
-
-def __getStyle__():
-    style = \
-        '''
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ECUSA experts guide</title>
+  </head>
+  <body>
+    <header>
+      <style type="text/css">
         .CSSTableGenerator {
             margin:0px;padding:0px;
             width:100%;
@@ -82,7 +60,7 @@ def __getStyle__():
             vertical-align:middle;
                 background:-o-linear-gradient(bottom, #c6d66b 5%, #ffffff 100%);	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #c6d66b), color-stop(1, #ffffff) );
             background:-moz-linear-gradient( center top, #c6d66b 5%, #ffffff 100% );
-            filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#c6d66b", endColorstr="#ffffff");	background: -o-linear-gradient(top,#c6d66b,ffffff);
+            filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=&quot;#c6d66b&quot;, endColorstr=&quot;#ffffff&quot;);	background: -o-linear-gradient(top,#c6d66b,ffffff);
 
             background-color:#c6d66b;
 
@@ -104,7 +82,7 @@ def __getStyle__():
         .CSSTableGenerator tr th {
                 background:-o-linear-gradient(bottom, #b8c958 5%, #b8c958 100%);	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #b8c958), color-stop(1, #b8c958) );
             background:-moz-linear-gradient( center top, #b8c958 5%, #b8c958 100% );
-            filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#b8c958", endColorstr="#b8c958");	background: -o-linear-gradient(top,#b8c958,b8c958);
+            filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=&quot;#b8c958&quot;, endColorstr=&quot;#b8c958&quot;);	background: -o-linear-gradient(top,#b8c958,b8c958);
             padding:7px;
             background-color:#b8c958;
             border:0px solid #000000;
@@ -118,7 +96,7 @@ def __getStyle__():
         .CSSTableGenerator tr th:hover {
             /*background:-o-linear-gradient(bottom, #b8c958 5%, #b8c958 100%);	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #b8c958), color-stop(1, #b8c958) );
             background:-moz-linear-gradient( center top, #b8c958 5%, #b8c958 100% );
-            filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#b8c958", endColorstr="#b8c958");	background: -o-linear-gradient(top,#b8c958,b8c958);
+            filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=&quot;#b8c958&quot;, endColorstr=&quot;#b8c958&quot;);	background: -o-linear-gradient(top,#b8c958,b8c958);
             */
             background-color:#333333;
         }
@@ -141,48 +119,13 @@ def __getStyle__():
             margin-top:30px
         }
 
-        '''
-
-    return style
-
-
-def generate_html(members_list, language_code):
-    """ Generate the html document for a list of members
-    :param members_list: list of members objects
-    :param language_code: 0 (ENGLISH) or 1 (SPANISH)
-    :return: html
-    """
-    doc = dominate.document(title='ECUSA experts guide')
-
-    with doc:
-        with header():
-            # CSS style
-            style(__getStyle__(), type="text/css")
-
-            # Javascript
-            #script(type="text/javascript", src="http://listjs.com/no-cdn/list.js")
-            script(type="text/javascript", src="http://code.jquery.com/jquery-1.11.3.min.js")
-            script(type="text/javascript", src="sorttable.js")
-
-            s = '''
+        </style>
+      <script src="http://code.jquery.com/jquery-1.11.3.min.js" type="text/javascript"></script>
+      <script src="sorttable.js" type="text/javascript"></script>
+      <script type="text/javascript">
                 $(function(){
                     var options = {
-                        valueNames: ['''
-            for key in FIELDS.iterkeys():
-                s+= "'{0}',".format(key)
-            s = s[:-1]
-            s+= "]};"
-
-
-            # s+= '''
-            #     $.extend($.expr[":"], {
-            #         "containsNC": function(elem, i, match, array) {
-            #             return (elem.textContent || elem.innerText || "").toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
-            #         }
-            #     });
-            # '''
-
-            s+= '''
+                        valueNames: ['first_name','surname','company','linkedin','keywords','position','email']};
                 $.extend($.expr[":"], {
                     "containsNC": function(elem, i, match, array) {
                         var s = match[3].replace(";","|").toLowerCase();
@@ -196,10 +139,7 @@ def generate_html(members_list, language_code):
                         return re.test((elem.textContent || elem.innerText || "").toLowerCase());
                     }
                 });
-            '''
-
-
-            s+= '''
+            
                     function refresh(){
                         var txt = $('#searchInput').val();
 
@@ -227,87 +167,87 @@ def generate_html(members_list, language_code):
                         refresh();
                     });
                 });
-                '''
-
-            # Create the script without enconding
-            scr = script(type="text/javascript")
-            scr.add_raw_string(s)
-
-        with body():
-            with div():
-                p("""La guia de expertos de ECUSA permite localizar rapidamente a profesionales que esten trabajando en
-                    un determinado area de especialidad.""")
-                p("Utiliza el campo de texto para buscar rapidamente en todos los campos de la tabla")
-            with div(id="users"):
-                with div("Search for any field"):
-                    input(id="searchInput", cls="search", placeholder="Search")
-
-                for category in CATEGORIES_LIST:
-                    with div(id="div"+category, cls="searchDiv"):
-                        p(category, cls="categoryTitle")
-                        with table(cls="CSSTableGenerator searchTable sortable"):
-                            # Header
-                            with thead():
-                                for key, values in FIELDS.iteritems():
-                                    th(values[language_code], cls="sort").set_attribute("data-sort", key)
-                            with tbody(cls="list"):
-                                # Rows
-                                for member in members_list:
-                                    with tr():
-                                        for key in FIELDS.iterkeys():
-                                            s = eval("member.{0}".format(key))
-                                            if isinstance(s, list):
-                                                text = ", ".join(s)
-                                            else:
-                                                text = str(s)
-                                            td(text, cls=key)
-
-    html = doc.render()
-    #print(doc)
-    return html
-
-
-def generate_Word_document(members_list):
-    # document.save("/Users/Jorge/Desktop/mydoc.docx")
-    path = '/Users/Jorge/Desktop/doc2.docx'
-    f = open(path)
-    document = Document(f)
-    f.close()
-
-    mainCats = ["Cat1", "Cat2"]
-    #document.add_heading(u'Guía de expertos de ECUSA', 0)
-
-    for category in mainCats:
-        document.add_heading(category, 1)
-
-        style = "Medium Shading 1 Accent 3"
-        table = document.add_table(rows=1, cols=3, style=style)
-        table.rows[0].cells[0].text = "Nombre"
-        table.columns[0].width = 40
-        table.rows[0].cells[1].text = "Apellido1"
-        table.columns[1].width = 100
-        table.rows[0].cells[2].text = "Apellido2"
-        table.columns[2].width = 150
-        for i in range(4):
-            member = members_list[0]
-            row = table.add_row()
-            row.cells[0].text = member.first_name
-            row.cells[1].text = member.surname
-            row.cells[2].text = member.company
-    document.save(path)
-
-
-
-
-csv_file_path = "html-samples/responses-sample.csv"
-members_list = Member.load_from_csv(csv_file_path)
-
-html = generate_html(members_list, ENGLISH)
-# print(html)
-# html = completeHtml(html2)
-
-html_file_path = "html-samples/html-sample6.html"
-with open(html_file_path, "w") as f:
-    f.write(html)
-
-
+                </script>
+    </header>
+    <body>
+      <div>
+        <p>La guia de expertos de ECUSA permite localizar rapidamente a profesionales que esten trabajando en
+                    un determinado area de especialidad.</p>
+        <p>Utiliza el campo de texto para buscar rapidamente en todos los campos de la tabla</p>
+      </div>
+      <div id="users">
+        <div>Search for any field
+          <input class="search" id="searchInput" placeholder="Search">
+        </div>
+        <div class="searchDiv" id="divMedicine">
+          <p class="categoryTitle">Medicine</p>
+          <table class="CSSTableGenerator searchTable sortable">
+            <thead>
+              <th class="sort" data-sort="first_name">First name</th>
+              <th class="sort" data-sort="surname">Surname</th>
+              <th class="sort" data-sort="company">Company</th>
+              <th class="sort" data-sort="linkedin">Web site / LinkedIn</th>
+              <th class="sort" data-sort="keywords">Specialities</th>
+              <th class="sort" data-sort="position">Position</th>
+              <th class="sort" data-sort="email">Email</th>
+            </thead>
+            <tbody class="list">
+              <tr>
+                <td class="first_name">Jorge</td>
+                <td class="surname">Onieva Onieva</td>
+                <td class="company">Brigham and Women's Hospital</td>
+                <td class="linkedin">http://www.linkedin.com/in/jonieva</td>
+                <td class="keywords">COPD, CT, Image processing</td>
+                <td class="position">iiResearch Associate</td>
+                <td class="email">e1@gmail.com</td>
+              </tr>
+              <tr>
+                <td class="first_name">Perico</td>
+                <td class="surname">Palotes</td>
+                <td class="company">Brigham and Women's Hospital</td>
+                <td class="linkedin">http://www.linkedin.com/in/jonieva</td>
+                <td class="keywords">COPD, CT, Image processing</td>
+                <td class="position">iiResearch Associate</td>
+                <td class="email">e1@gmail.com</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="searchDiv" id="divBiology">
+          <p class="categoryTitle">Biology</p>
+          <table class="CSSTableGenerator searchTable sortable">
+            <thead>
+              <th class="sort" data-sort="first_name">First name</th>
+              <th class="sort" data-sort="surname">Surname</th>
+              <th class="sort" data-sort="company">Company</th>
+              <th class="sort" data-sort="linkedin">Web site / LinkedIn</th>
+              <th class="sort" data-sort="keywords">Specialities</th>
+              <th class="sort" data-sort="position">Position</th>
+              <th class="sort" data-sort="email">Email</th>
+            </thead>
+            <tbody class="list">
+              <tr>
+                <td class="first_name">Jorge</td>
+                <td class="surname">Onieva Onieva</td>
+                <td class="company">Brigham and Women's Hospital</td>
+                <td class="linkedin">http://www.linkedin.com/in/jonieva</td>
+                <td class="keywords">COPD, CT, Image processing</td>
+                <td class="position">iiResearch Associate</td>
+                <td class="email">e1@gmail.com</td>
+              </tr>
+              <tr>
+                <td class="first_name">Perico</td>
+                <td class="surname">Palotes</td>
+                <td class="company">Brigham and Women's Hospital</td>
+                <td class="linkedin">http://www.linkedin.com/in/jonieva</td>
+                <td class="keywords">COPD, CT, Image processing</td>
+                <td class="position">iiResearch Associate</td>
+                <td class="email">e1@gmail.com</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </body>
+  </body>
+</html>
