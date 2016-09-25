@@ -22,7 +22,7 @@ from oauth2client.file import Storage
 from apiclient import discovery
 
 credentials_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Ecusa-credentials-secretary.json")
-print credentials_file
+mail_credentials_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "mail_pwd.txt")
 fromaddr = 'secretary-bos@ecusa.es'
 
 
@@ -87,7 +87,7 @@ def members_about_to_expire_warning(destination, first_reminder_timespan_days=7,
 
 
 def send_email(toaddrs, subject, body):
-    with open("mail_pwd.txt", 'r') as f:
+    with open(mail_credentials_file, 'r') as f:
         password=f.readline()
 
     server = smtplib.SMTP('smtp.gmail.com:587')
@@ -109,8 +109,6 @@ def send_email(toaddrs, subject, body):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='ECUSA notifications')
-    # parser.add_argument('--warn_expired_users', type=bool,
-    #                     help="When False, there won't be a notification if we have only expired users", default=True)
     parser.add_argument('--destination', type=str, required=True,
                         help="Email address of the destination (if more than one, separate them with ;)")
     parser.add_argument('--first_reminder', type=int, default=7,
@@ -119,8 +117,6 @@ if __name__ == "__main__":
     parser.add_argument('--expired_for_at_least', type=int, default=0,
                         help="Replace users considered expired. For example, if expired_for_at_least = 7, only warn "
                              "about the users that have been expired for more than 7 days")
-    expired_for_at_least_timespan_days = 0
-
     args = parser.parse_args()
     dest = map(str.strip, args.destination.split(';'))
     members_about_to_expire_warning(dest, first_reminder_timespan_days=args.first_reminder,
