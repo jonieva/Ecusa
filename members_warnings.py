@@ -1,3 +1,4 @@
+import os
 import argparse
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials      # pip install oauth2client
@@ -20,7 +21,8 @@ from oauth2client.file import Storage
 #                   pip install --upgrade python-gflags
 from apiclient import discovery
 
-credentials_file = "Ecusa-credentials-secretary.json"
+credentials_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Ecusa-credentials-secretary.json")
+print credentials_file
 fromaddr = 'secretary-bos@ecusa.es'
 
 
