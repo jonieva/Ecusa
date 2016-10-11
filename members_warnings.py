@@ -22,7 +22,7 @@ from oauth2client.file import Storage
 from apiclient import discovery
 
 credentials_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Ecusa-credentials-secretary.json")
-mail_credentials_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "mail_pwd.txt")
+mail_pwd_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "mail_pwd.txt")
 fromaddr = 'secretary-bos@ecusa.es'
 
 
@@ -87,7 +87,7 @@ def members_about_to_expire_warning(destination, first_reminder_timespan_days=7,
 
 
 def send_email(toaddrs, subject, body):
-    with open(mail_credentials_file, 'r') as f:
+    with open(mail_pwd_file, 'r') as f:
         password=f.readline()
 
     server = smtplib.SMTP('smtp.gmail.com:587')
